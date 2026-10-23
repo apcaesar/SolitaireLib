@@ -70,7 +70,31 @@ div#buttons button {
     max-width: 30vh;
 }
 
+div#buttons label#cardSizeControl {
+    margin: 0 1px;
+    padding: 0 1vh;
+    height: 5vh;
+    font-size: 2.5vh;
+    background-color: #ddd;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 1vh;
+    flex-grow: 1;
+    flex-basis: 0;
+    max-width: 30vh;
+    @include user-select(none);
+}
+
+div#buttons label#cardSizeControl input {
+    flex-grow: 1;
+    min-width: 0;
+    margin: 0;
+}
+
 #tableHolder {
+    // card layout is in em units, so scaling the font size scales the cards:
+    font-size: calc(1rem * var(--card-scale, 1));
     position: absolute;
     left: 0;
     right: 0;
