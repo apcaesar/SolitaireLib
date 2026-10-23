@@ -2,20 +2,37 @@ name: Publish
 on:
     push:
         branches: [master]
+    workflow_dispatch:
+permissions:
+    contents: read
+    pages: write
+    id-token: write
+concurrency:
+    group: pages
+    cancel-in-progress: true
 jobs:
     build:
         runs-on: ubuntu-latest
         steps:
-            - uses: actions/checkout@v2
-            - uses: actions/setup-node@v1
+            - uses: actions/checkout@v4
+            - uses: actions/setup-node@v4
               with:
-                  node-version: "18.x"
+                  node-version: "20.x"
             - name: Install Dependencies
               run: npm ci
             - name: Build
               run: npm run build
-            - name: Deploy
-              uses: peaceiris/actions-gh-pages@v3
+            - name: Upload
+              uses: actions/upload-pages-artifact@v3
               with:
-                  github_token: ${{ secrets.GITHUB_TOKEN }}
-                  publish_dir: ./bin
+                  path: ./bin
+    deploy:
+        needs: build
+        runs-on: ubuntu-latest
+        environment:
+            name: github-pages
+            url: ${{ steps.deployment.outputs.page_url }}
+        steps:
+            - name: Deploy
+              id: deployment
+              uses: actions/deploy-pages@v4
