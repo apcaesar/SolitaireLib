@@ -13,6 +13,35 @@ gameInfos.set(Pyramid.gameId, Pyramid);
 window.addEventListener("load", () => {
     const tableHolder = document.getElementById("tableHolder") ?? document.body;
 
+    const cardSizeSlider = document.getElementById("cardSizeSlider");
+    if (cardSizeSlider instanceof HTMLInputElement) {
+        const cardSizeKey = "cardSize";
+
+        const applyCardSize = () => {
+            tableHolder.style.setProperty("--card-scale", `${parseFloat(cardSizeSlider.value) / 100}`);
+            // let views refresh their unit conversions:
+            window.dispatchEvent(new Event("resize"));
+        };
+
+        try {
+            const savedCardSize = window.localStorage.getItem(cardSizeKey);
+            if (savedCardSize) cardSizeSlider.value = savedCardSize;
+        } catch (error) {
+            console.error("Failed to load card size.", error);
+        }
+
+        cardSizeSlider.addEventListener("input", () => {
+            applyCardSize();
+            try {
+                window.localStorage.setItem(cardSizeKey, cardSizeSlider.value);
+            } catch (error) {
+                console.error("Failed to save card size.", error);
+            }
+        });
+
+        applyCardSize();
+    }
+
     let currentGame: IGamePresenter | undefined;
 
     const refreshGame = () => {
